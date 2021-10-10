@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Profile;
+use Carbon\Carbon;
+use App\Profile_histories;
 class ProfileController extends Controller
 {
     public function add()
@@ -18,12 +20,25 @@ class ProfileController extends Controller
       $profile->save();
       return redirect('admin/profile/create');
     }
-    public function edit()
+    public function edit(Request $request)
     {
-      return view('admin.profile.edit');
+      $profile = Profile::find($request->id);
+      if (empty($profile)) {
+        abort(404);    
+      }
+      return view('admin.profile.edit', ['profile_form' => $profile]);
+      
+      
     }
-    public function update()
+    
+    
+    public function update(Request $request)
     {
+        $profile_history = new Profile_histories;
+        $profile_history->news_id = $profile_history->id;
+        $profile_history->edited_at = Carbon::now();
+        $profile_history->save();
+        
       return redirect('admin/profile/edit');
     }
   }
